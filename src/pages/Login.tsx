@@ -63,7 +63,9 @@ function LoginCard() {
         isClosable: true
       })
       
-      data.role === "sales-manager" ? navigate('/sales') : navigate('/productions');
+      data.role === "sales-manager" ? navigate('/sales') : 
+      data.role === "production-manager" ? navigate('/prodductions') :
+      navigate('/admin/users');
 
     } catch (err:any) {
       setLoading(false);

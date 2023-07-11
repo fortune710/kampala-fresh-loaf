@@ -315,7 +315,7 @@ export default function UserHome(): JSX.Element {
                         </Thead>
                         <Tbody zIndex={-1}>
                             {
-                                invoices?.map(({ id, revenue_made, timestamp, payment_reference }, index) => {
+                                invoices?.map(({ id, revenue_made, timestamp, payment_reference, recipient, status }, index) => {
                                     const datetime = new Timestamp(timestamp.seconds, timestamp.nanoseconds).toDate();
                                     const date = datetime.toDateString();
                                     const time = datetime.toTimeString();
@@ -324,7 +324,9 @@ export default function UserHome(): JSX.Element {
                                     <Tr key={id}>
                                         <Td>{index}</Td>
                                         <Td>{payment_reference}</Td>
+                                        <Td>{recipient ?? "N/A"}</Td>
                                         <Td isNumeric>{revenue_made}</Td>
+                                        <Td>{status}</Td>
                                         <Td>{date}</Td>
                                     </Tr>
                                     )
