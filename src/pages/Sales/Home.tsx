@@ -55,6 +55,9 @@ import { usePayment } from '../../hooks/usePayment';
 import { useProducts } from '../../hooks/useProducts';
 import { useStaff } from '../../hooks/useStaffTransaction';
 import { FirebaseCollections, Sales, SalesStatus } from '../../types';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
 
 
 
@@ -88,6 +91,24 @@ export default function UserHome(): JSX.Element {
     } = useDisclosure();
 
     const { products } = useProducts();
+    const invoiceRef = useRef<HTMLDivElement>(null);
+
+    const generateInvoice = async () => {
+        const element = invoiceRef?.current;
+        const canvas = await html2canvas(element!);
+        const data = canvas.toDataURL('image/png');
+    
+        const pdf = new jsPDF('portrait', 'pt', 'a4');
+        const imgProperties = pdf.getImageProperties(data);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight =
+          (imgProperties.height * pdfWidth) / imgProperties.width;
+    
+        pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        const file = pdf.save(`Payment-${paymentId}.pdf`);
+  
+    }
+
 
     const signOutUser = async () => {
         try {
@@ -163,6 +184,7 @@ export default function UserHome(): JSX.Element {
                 isClosable: true
             })
             queryClient.invalidateQueries([FirebaseCollections.Invoices]);
+            generateInvoice();
             newInvoiceOnClose();
 
         } catch {
@@ -246,7 +268,7 @@ export default function UserHome(): JSX.Element {
             <ModalContent>
                 <ModalHeader>New Invoice Record</ModalHeader>
                 <ModalCloseButton />
-                <ModalBody>
+                <ModalBody ref={invoiceRef}>
                     <Stack spacing={4}>
                         {
                             products?.map((product) => (
@@ -260,7 +282,7 @@ export default function UserHome(): JSX.Element {
                         }
 
                         <FormControl>
-                            <FormLabel>New Status</FormLabel>
+                            <FormLabel>Status</FormLabel>
                             <Select onChange={(e) => setStatus(e.target.value as SalesStatus)}>
                                 <option value=""></option>
                                 <option value="paid">Paid</option>
@@ -338,8 +360,10 @@ export default function UserHome(): JSX.Element {
                             <Tfoot>
                                 <Tr>
                                     <Th>S/N</Th>
-                                    <Th>Transaction ID</Th>
+                                    <Th>Payment ID</Th>
+                                    <Th>Recipient</Th>
                                     <Th isNumeric>Amount</Th>
+                                    <Th>Status</Th>
                                     <Th>Date</Th>
                                 </Tr>
                             </Tfoot>
