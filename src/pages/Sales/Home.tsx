@@ -106,6 +106,7 @@ export default function UserHome(): JSX.Element {
     
         pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
         const file = pdf.save(`Payment-${paymentId}.pdf`);
+        file.save(`Payment-${paymentId}.pdf`)
   
     }
 
