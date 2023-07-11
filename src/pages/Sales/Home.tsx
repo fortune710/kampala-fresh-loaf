@@ -133,6 +133,12 @@ export default function UserHome(): JSX.Element {
 
     }
 
+    const openNewInvoiceModal = () => {
+        const paymentReference = generate12CharId(6);
+        setPaymentId(paymentReference);
+        newInvoiceOnOpen();
+    }
+
     const getPaymentRecord = (paymentReference: string) => {
         setPaymentId(paymentReference);
         getPayment();
@@ -158,7 +164,6 @@ export default function UserHome(): JSX.Element {
     const handleAddInvoice = () => {
 
         try {
-            const paymentReference = generate12CharId(6);
             const data = products?.map((product) => {
                 const name = product.name.toLowerCase().replaceAll("-","_").replaceAll(" ", "_");
                 return ({ ...product, quantity_sold: newInvoice[`${name}`] })
@@ -169,7 +174,7 @@ export default function UserHome(): JSX.Element {
             
             
             const newSales: Omit<Sales, "id"> = {
-                payment_reference: paymentReference,
+                payment_reference: paymentId,
                 data: data!,
                 revenue_made: revenueMade! ?? 0,
                 timestamp: Timestamp.now(),
@@ -248,7 +253,7 @@ export default function UserHome(): JSX.Element {
         >
             Sign Out
         </Button>
-        <Button onClick={newInvoiceOnOpen}>
+        <Button onClick={openNewInvoiceModal}>
             New Sales
         </Button>
 
@@ -270,6 +275,9 @@ export default function UserHome(): JSX.Element {
                 <ModalHeader>New Invoice Record</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody ref={invoiceRef}>
+                    <Text fontWeight="bold" fontSize={"xl"} textAlign="center">
+                        {paymentId}
+                    </Text>
                     <Stack spacing={4}>
                         {
                             products?.map((product) => (
