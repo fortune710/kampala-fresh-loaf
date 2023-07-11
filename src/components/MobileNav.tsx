@@ -10,9 +10,11 @@ import { FiMenu, FiBell, FiChevronDown } from "react-icons/fi";
 import Logo from '../assets/logo.png';
 interface MobileProps extends FlexProps {
     onOpen: () => void;
+    logo: string;
+    name: string;
 }
 
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const MobileNav = ({ onOpen, logo, name, ...rest }: MobileProps) => {
     return (
     <Flex
         ml={{ base: 0, md: 60 }}
@@ -33,9 +35,12 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             icon={<FiMenu />}
         />
 
-        <Box display={{ lg: 'none' }}>
-            <img src={Logo} width="80px" alt="Adman-Logo"/>
-        </Box>
+        {
+            !logo ? null :
+            <Box display={{ lg: 'none' }}>
+                <img src={Logo} width="80px" alt="Adman-Logo"/>
+            </Box>
+        }
 
         <Flex alignItems={'center'}>
             <Menu>
@@ -46,14 +51,15 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                     <HStack>
                         <Avatar
                             size={'sm'}
-                            src={Logo}
+                            src={logo}
+                            name={name}
                         />
                         <VStack
                             display={{ base: 'none', md: 'flex' }}
                             alignItems="flex-start"
                             spacing="1px"
                             ml="2">
-                            <Text fontSize="sm">Adman</Text>
+                            <Text fontSize="sm">{name ?? "Company Name"}</Text>
                             <Text fontSize="xs" color="gray.600">
                                 Admin
                             </Text>

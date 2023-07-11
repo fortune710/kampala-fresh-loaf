@@ -19,9 +19,9 @@ import { doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../../environments/firebase';
-import { User } from '../../types';
+import { Admin, User } from '../../types';
 import { useSetAtom } from 'jotai';
-import { currentUserAtom } from '../../jotai-store';
+import { currentAdminAtom, currentUserAtom } from '../../jotai-store';
 
 interface FormFields {
   email: string;
@@ -31,6 +31,7 @@ interface FormFields {
   
 function LoginCard() {
   const navigate = useNavigate();
+  const setCurrentAdmin = useSetAtom(currentAdminAtom);
 
   const [form, setForm] = useState<FormFields>({
     email: '',
@@ -46,7 +47,7 @@ function LoginCard() {
       
       const ref = doc(firestore, 'users', user.uid);
       const snapshot = await getDoc(ref);
-      const data = snapshot.data() as User
+      const data = snapshot.data() as Admin
       
       setLoading(false);
       
@@ -56,6 +57,8 @@ function LoginCard() {
         status: "success",
         isClosable: true
       })
+
+      setCurrentAdmin(data)
       
       data.role === "sales-manager" ? navigate('/sales') : data.role === "production-manager" ? navigate('/productions') 
       : navigate('/admin/users');

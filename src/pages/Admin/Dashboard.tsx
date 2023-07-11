@@ -25,6 +25,13 @@ import { Outlet, Link as ReactRouterLink, useLocation, redirect } from 'react-ro
 import { MdOutlineInventory, MdOutlineInventory2, MdShoppingBasket } from 'react-icons/md';
 
 import Logo from '../../assets/logo.png';
+import { useQuery } from '@tanstack/react-query';
+import { Admin, FirebaseCollections, ReactQueryKeys } from '../../types';
+import { async } from '@firebase/util';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../../environments/firebase';
+import { useAtomValue } from 'jotai';
+import { currentAdminAtom } from '../../jotai-store';
 interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -40,6 +47,15 @@ const LinkItems: Array<LinkItemProps> = [
 
 const AdminDashboard: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const currentAdmin = useAtomValue(currentAdminAtom);
+  const adminDocRef = doc(firestore, FirebaseCollections.Staff, currentAdmin!.id ?? auth.currentUser?.uid)
+
+  const { data, isLoading } = useQuery([ReactQueryKeys.AdminUser], async () => {
+    const snapshot = await getDoc(adminDocRef);
+    return { id: snapshot.id, ...snapshot.data() } as Admin;
+  })
+
   
   useEffect(() => {
     redirect("/admin/users")
@@ -64,7 +80,7 @@ const AdminDashboard: React.FC = () => {
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
+      <MobileNav logo={data?.logo!} name={data?.name!} onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4">
         <Outlet/>
       </Box>
@@ -77,6 +93,8 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const currentAdmin = useAtomValue(currentAdminAtom);
+
   return (
     <Box
         transition="3s ease"
@@ -89,11 +107,12 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         {...rest}
     >
         <Flex h="20" alignItems="center" my="5" mx="8" justifyContent="space-between">
+            <img src={currentAdmin?.logo} alt={`${currentAdmin?.name}'s Logo`}/>
             <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
         </Flex>
         {LinkItems.map((link) => (
             <NavItem route={link.route} key={link.name} icon={link.icon}>
-            {link.name}
+              {link.name}
             </NavItem>
         ))}
     </Box>

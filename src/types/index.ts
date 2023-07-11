@@ -22,13 +22,21 @@ export interface User {
     last_logout: any,
 }
 
+export interface Admin extends Pick<User, "id"|"name"|"role"> {
+    logo: string;
+}
+
 export enum FirebaseCollections {
     Productions = "productions",
     Products = "products",
     Invoices = "invoices",
     Reciepts = "receipts",
-    Staff = "staff",
-    Stock = "stock"
+    Staff = "users",
+    Stock = "stock",
+}
+
+export enum ReactQueryKeys {
+    AdminUser = "admin-user"
 }
 
 

@@ -296,69 +296,58 @@ export default function UserHome(): JSX.Element {
             </ModalContent>
         </Modal>
         
-
-        <section className="staff-table">
-            <TableContainer overflowY={"auto"} maxHeight="300px">
-                <Table variant='striped' colorScheme='teal'>
-                    {!isLoading && invoices?.length === 0 && <TableCaption>Add a new record</TableCaption>}
-                    <Thead zIndex={10} top={0} position={"sticky"}>
-                        <Tr>
-                            <Th>S/N</Th>
-                            <Th>Payment ID</Th>
-                            <Th isNumeric>Amount</Th>
-                            <Th>Date</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody zIndex={-1}>
-                        {
-                            isLoading ? (
-                            <Tr>
-                                <Td>
-                                    <Skeleton/>
-                                </Td>
-                                <Td>
-                                    <Skeleton/>
-                                </Td>
-                                <Td>
-                                    <Skeleton/>
-                                </Td>
-                                <Td>
-                                    <Skeleton/>
-                                </Td>
-                            </Tr>
-                            ) :
-                            invoices?.map(({ id, revenue_made, timestamp, payment_reference }, index) => {
-                                const datetime = new Timestamp(timestamp.seconds, timestamp.nanoseconds).toDate();
-                                const date = datetime.toDateString();
-                                const time = datetime.toTimeString();
-
-                                return (
-                                <Tr key={id}>
-                                    <Td>{index}</Td>
-                                    <Td>{payment_reference}</Td>
-                                    <Td isNumeric>{revenue_made}</Td>
-                                    <Td>{date}</Td>
-                                </Tr>
-                                )
-                            })
-                        }
-                    </Tbody>
-                    {
-                        !isLoading && data.length > 6 ?
-                        <Tfoot>
+        {
+            isLoading ? <Skeleton height={10} borderRadius={4} maxWidth="80%" minWidth="60%"/>
+            : 
+            <section className="staff-table">
+                <TableContainer overflowY={"auto"} maxHeight="300px">
+                    <Table variant='striped' colorScheme='teal'>
+                        {!isLoading && invoices?.length === 0 && <TableCaption>Add a new record</TableCaption>}
+                        <Thead zIndex={10} top={0} position={"sticky"}>
                             <Tr>
                                 <Th>S/N</Th>
-                                <Th>Transaction ID</Th>
+                                <Th>Payment ID</Th>
+                                <Th>Recipient</Th>
                                 <Th isNumeric>Amount</Th>
+                                <Th>Status</Th>
                                 <Th>Date</Th>
                             </Tr>
-                        </Tfoot>
-                        : null
-                    }
-                </Table>
-            </TableContainer>
+                        </Thead>
+                        <Tbody zIndex={-1}>
+                            {
+                                invoices?.map(({ id, revenue_made, timestamp, payment_reference }, index) => {
+                                    const datetime = new Timestamp(timestamp.seconds, timestamp.nanoseconds).toDate();
+                                    const date = datetime.toDateString();
+                                    const time = datetime.toTimeString();
 
-        </section>
+                                    return (
+                                    <Tr key={id}>
+                                        <Td>{index}</Td>
+                                        <Td>{payment_reference}</Td>
+                                        <Td isNumeric>{revenue_made}</Td>
+                                        <Td>{date}</Td>
+                                    </Tr>
+                                    )
+                                })
+                            }
+                        </Tbody>
+                        {
+                            !isLoading && data.length > 6 ?
+                            <Tfoot>
+                                <Tr>
+                                    <Th>S/N</Th>
+                                    <Th>Transaction ID</Th>
+                                    <Th isNumeric>Amount</Th>
+                                    <Th>Date</Th>
+                                </Tr>
+                            </Tfoot>
+                            : null
+                        }
+                    </Table>
+                </TableContainer>
+
+            </section>
+        }
 
         <AlertDialog
             isOpen={signOutAlertIsOpen}
